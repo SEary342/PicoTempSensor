@@ -1,0 +1,10 @@
+[project]
+name = "tempsensor"
+version = "0.0.1"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "flask>=3.1.2",
+    "gunicorn>=25.1.0",
+]
