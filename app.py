@@ -1,12 +1,15 @@
+import json
+from pathlib import Path
 from flask import Flask, request, render_template_string, jsonify
 from datetime import datetime
 from pico.shared_html import get_html_template
 
 app = Flask(__name__)
 
-# Global storage for the latest data received from the Pico
-# Initialized with placeholders
-last_data = {
+# File to store the latest data so all Gunicorn workers can access it
+DATA_FILE = 'sensor_data.json'
+
+DEFAULT_DATA = {
     "temp_c": "--", 
     "temp_f": "--", 
     "temp_k": "--", 
@@ -16,12 +19,22 @@ last_data = {
     "time": "No data yet"
 }
 
+def get_last_data():
+    if Path(DATA_FILE).exists():
+        try:
+            with open(DATA_FILE, 'r') as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return DEFAULT_DATA
+
 @app.route('/', methods=['GET'])
 def dashboard():
     """
     Serves the beautifully formatted HTML dashboard using 
     the shared template file.
     """
+    last_data = get_last_data()
     return render_template_string(get_html_template(last_data))
 
 @app.route('/api', methods=['GET'])
@@ -30,6 +43,7 @@ def api_view():
     Returns the last received sensor data as raw JSON.
     Useful for other scripts or integrations.
     """
+    last_data = get_last_data()
     return jsonify(last_data), 200
 
 @app.route('/data', methods=['POST'])
@@ -38,13 +52,11 @@ def receive_data():
     Endpoint for the Pico to 'PUSH' its data.
     Expected JSON format: {"temp_c": 22, "temp_f": 71.6, ...}
     """
-    global last_data
-    
     incoming = request.json
     if not incoming:
         return jsonify({"status": "error", "message": "No JSON provided"}), 400
     
-    # Update our global state with the new data
+    # Update our state with the new data
     last_data = incoming
     
     # Add a laptop-side timestamp so we know exactly when it arrived
@@ -56,6 +68,10 @@ def receive_data():
             last_data['temp_k'] = round(float(last_data['temp_c']) + 273.15, 2)
         except (ValueError, TypeError):
             last_data['temp_k'] = "--"
+    
+    # Save to file so other workers see it
+    with open(DATA_FILE, 'w') as f:
+        json.dump(last_data, f)
     
     print(f"[{last_data['time']}] Update from Pico: {last_data.get('temp_f')}°F | {last_data.get('hum')}% Hum | {last_data.get('vsys_volts')}V")
     
