@@ -59,6 +59,18 @@ SLEEP_MINS=30
 
 Upload all files inside the `/pico` directory to the root of your Raspberry Pi Pico W using Thonny or VS Code (Pico-W-Go).
 
+## 🔌 Wiring Guide (DHT11)
+
+Connect the DHT11 sensor to the Raspberry Pi Pico W as follows:
+
+| DHT11 Pin | Pico W Pin | Description |
+|-----------|------------|-------------|
+| **VCC (+)** | 3V3 (Pin 36) | Power (3.3V) |
+| **DATA (Out)** | GP16 (Pin 21) | Data Signal |
+| **GND (-)** | GND (Pin 38) | Ground |
+
+> **Note**: If you are using a raw DHT11 sensor (4-pin) instead of a module (3-pin), you will need a 10kΩ pull-up resistor between VCC and DATA. Most breakout boards include this resistor.
+
 ## 🎨 UI Logic
 
 The dashboard is driven by shared_html.py. It calculates the visual state based on the temperature in Fahrenheit:

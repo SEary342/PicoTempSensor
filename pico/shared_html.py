@@ -57,6 +57,7 @@ def get_html_template(data):
         <div class="grid">
             <div class="stat-item"><span class="stat-label">CELSIUS</span><span class="stat-val">{data.get("temp_c", "--")}°C</span></div>
             <div class="stat-item"><span class="stat-label">HUMIDITY</span><span class="stat-val">{data.get("hum", "--")}%</span></div>
+            <div class="stat-item"><span class="stat-label">VOLTAGE</span><span class="stat-val">{data.get("vsys_volts", "--")}V</span></div>
         </div>
         <div class="tag">{data.get("temp_k", "--")} Kelvin</div>
         <div class="footer">Updated: {data.get("time", data.get("runtime_s", "Live"))}</div>

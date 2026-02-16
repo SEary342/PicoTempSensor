@@ -11,6 +11,7 @@ last_data = {
     "temp_f": "--", 
     "temp_k": "--", 
     "hum": "--", 
+    "vsys_volts": "--",
     "status": "Waiting...", 
     "time": "No data yet"
 }
@@ -48,8 +49,15 @@ def receive_data():
     
     # Add a laptop-side timestamp so we know exactly when it arrived
     last_data['time'] = datetime.now().strftime("%I:%M:%S %p")
+
+    # Calculate Kelvin since it's not sent by Pico anymore
+    if 'temp_c' in last_data:
+        try:
+            last_data['temp_k'] = round(float(last_data['temp_c']) + 273.15, 2)
+        except (ValueError, TypeError):
+            last_data['temp_k'] = "--"
     
-    print(f"[{last_data['time']}] Update from Pico: {last_data.get('temp_f')}°F | {last_data.get('hum')}% Hum")
+    print(f"[{last_data['time']}] Update from Pico: {last_data.get('temp_f')}°F | {last_data.get('hum')}% Hum | {last_data.get('vsys_volts')}V")
     
     return jsonify({"status": "success"}), 200
 
