@@ -1,0 +1,1 @@
+docker run --rm --net=host   -v "${PWD}":/config   --device=/dev/ttyACM0:/dev/ttyACM0   -it ghcr.io/esphome/esphome
