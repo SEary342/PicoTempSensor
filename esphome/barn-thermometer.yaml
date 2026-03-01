@@ -21,6 +21,11 @@ esp32:
   framework:
     type: arduino
 
+i2c:
+  sda: GPIO6
+  scl: GPIO7
+  scan: true
+
 # Enable logging
 logger:
 
@@ -63,11 +68,18 @@ deep_sleep:
 sensor:
   - platform: dht
     pin:
-      number: GPIO6
+      number: GPIO3
     model: AUTO_DETECT
     temperature:
       name: "Barn Temperature"
     humidity:
       name: "Barn Humidity"
     update_interval: 5s
-    
+
+  - platform: bmp280_i2c
+    temperature:
+      name: "BMP280 Temperature"
+    pressure:
+      name: "BMP280 Pressure"
+    address: 0x76
+    update_interval: 5s
